@@ -102,9 +102,51 @@ while True:
 
 ```bash
 
-Pending...
+#Importamos las librerias necesarias
+import time
+import microcontroller
+import board
+import busio
+import displayio
+import terminalio
+import adafruit_displayio_ssd1306p
+from adafruit_display_text import label
+
+# Configuramos las lineas de reloj(slc) y de datos (sda) asignandoles los pines GP5 y GP4
+i2c = busio.I2C (scl=board.GP5, sda=board.GP4) 
+
+# asignamos la direccion de la pi pico
+display_bus = displayio.I2CDisplay (i2c, device_address = 0x3C) 
+
+display = adafruit_displayio_ssd1306p.SSD1306(display_bus, width=128, height=64)
+splash = displayio.Group()
+display.show(splash)
+
+color_bitmap = displayio.Bitmap(128, 64, 1) #Pintamos toda la pantalal de blanco
+color_palette = displayio.Palette(1)
+color_palette[0] = 0xFFFFFF  # White
+ 
+bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
+splash.append(bg_sprite)
+
+# dibujamos un rectangulo negro mas pequeño que el blanco
+inner_bitmap = displayio.Bitmap(118, 54, 1)
+inner_palette = displayio.Palette(1)
+inner_palette[0] = 0x000000  # Black
+inner_sprite = displayio.TileGrid(inner_bitmap, pixel_shader=inner_palette, x=5, y=4)
+splash.append(inner_sprite)
+ 
+# Dibujamos una etiqueta
+text = str(microcontroller.cpu.temperature) + " C \n By: Julius"
+text_area = label.Label(terminalio.FONT, text=text, color=0xFFFF00, x=40, y=25)
+splash.append(text_area)
+
+ 
+while True:
+    pass
 
 ```
+![imagen](imagen/P3_Temp1306_2.gif)
 ![imagen](imagen/P3_Temp1306.jpg)
 
 ---
